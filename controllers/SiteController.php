@@ -15,8 +15,9 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index.tpl', [
-            'name' => "<span style='color: red;'>Juni</span>",
-            'occupation' => "templator"
+            'name' => '<robot>Vasya</robot>',
+            'occupation' => 'templator',
+            't' => 0,
         ]);
     }
 }

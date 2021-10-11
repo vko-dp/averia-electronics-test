@@ -56,6 +56,8 @@ $config = [
             'renderers' => [
                 'tpl' => [
                     'class' => \app\models\templateEngine\DummyViewRenderer::class,
+                    'escapeToken' => ['{{', '}}'],
+                    'notEscapeToken' => ['{', '}'],
                 ],
             ],
         ],

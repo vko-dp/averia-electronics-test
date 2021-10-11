@@ -42,23 +42,41 @@ class Dummy extends Model
     }
 
     /**
-     * @param $file
-     * @param $params
+     * @param $view
+     * @param $__tplFile
+     * @param $__tplParams
      * @return false|string
      * @throws InvalidConfigException
      */
-    public function executeTemplate($file, $params) {
+    public function executeTemplate($view, $__tplFile, $__tplParams) {
 
-        extract($params, EXTR_SKIP);
+        extract($__tplParams, EXTR_SKIP);
 
         ob_start();
 
-        require $this->_getCompiledTemplatePath($file, $params);
+        require $this->_getCompiledTemplatePath($__tplFile, $__tplParams);
 
         $string = ob_get_contents();
         ob_end_clean();
 
         return $string;
+    }
+
+    /**
+     * @param $template
+     * @param $result
+     * @return array|false
+     * @throws InvalidTemplateException
+     */
+    public function revertTemplateResult($template, $result) {
+
+        $revert = new RevertDummy([
+            'template' => $template,
+            'result' => $result,
+            'tokens' => $this->_getTokens(),
+        ]);
+
+        return $revert->getTemplateParams();
     }
 
     /**
@@ -84,21 +102,28 @@ class Dummy extends Model
         }
 
         $this->_templatePath = $templatePath;
-        $compiledTemplatePath = self::$_templateDir . '/' . md5($this->_templatePath . filemtime($this->_templatePath)) . '.php';
+        $compiledTemplatePath = self::$_templateDir . '/' . md5($this->_templatePath . filemtime($this->_templatePath) . implode(',', array_keys($params))) . '.php';
 
         if(!file_exists($compiledTemplatePath)) {
 
             $parser = new Parser([
                 'content' => file_get_contents($this->_templatePath),
-                'tokens' => [
-                    'escapeToken' => $this->escapeToken,
-                    'notEscapeToken' => $this->notEscapeToken,
-                ],
+                'tokens' => $this->_getTokens(),
             ]);
 
             file_put_contents($compiledTemplatePath, $parser->parse());
         }
 
         return $compiledTemplatePath;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getTokens() {
+        return [
+            'escapeToken' => $this->escapeToken,
+            'notEscapeToken' => $this->notEscapeToken,
+        ];
     }
 }

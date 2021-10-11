@@ -27,9 +27,7 @@ class Parser extends Component
         foreach($this->tokens as $method => $params) {
             call_user_func([$this, $method], $params);
         }
-
         return $this->content;
-
     }
 
     /**

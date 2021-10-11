@@ -32,6 +32,6 @@ class DummyViewRenderer extends ViewRenderer
             'notEscapeToken' => $this->notEscapeToken,
         ]);
 
-        return $dummy->executeTemplate($file, $params);
+        return $dummy->executeTemplate($view, $file, $params);
     }
 }
