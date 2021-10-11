@@ -55,8 +55,7 @@ $config = [
         'view' => [
             'renderers' => [
                 'tpl' => [
-                    'class' => 'yii\smarty\ViewRenderer',
-                    //'cachePath' => '@runtime/Smarty/cache',
+                    'class' => \app\models\templateEngine\DummyViewRenderer::class,
                 ],
             ],
         ],

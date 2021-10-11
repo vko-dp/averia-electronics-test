@@ -24,8 +24,6 @@ class Dummy extends Model
 
     /** @var string */
     protected $_templatePath;
-    /** @var array  */
-    protected $_templateParams = [];
 
 
     /** @var string */
@@ -44,12 +42,32 @@ class Dummy extends Model
     }
 
     /**
+     * @param $file
+     * @param $params
+     * @return false|string
+     * @throws InvalidConfigException
+     */
+    public function executeTemplate($file, $params) {
+
+        extract($params, EXTR_SKIP);
+
+        ob_start();
+
+        require $this->_getCompiledTemplatePath($file, $params);
+
+        $string = ob_get_contents();
+        ob_end_clean();
+
+        return $string;
+    }
+
+    /**
      * @param $templatePath
      * @param array $params
      * @return string
      * @throws InvalidConfigException
      */
-    public function getCompiledTemplatePath($templatePath, array $params = []) {
+    protected function _getCompiledTemplatePath($templatePath, array $params = []) {
 
         if(empty($templatePath)) {
             throw new InvalidConfigException('Dummy::templatePath is required param');
@@ -66,14 +84,12 @@ class Dummy extends Model
         }
 
         $this->_templatePath = $templatePath;
-        $this->_templateParams = $params;
         $compiledTemplatePath = self::$_templateDir . '/' . md5($this->_templatePath . filemtime($this->_templatePath)) . '.php';
 
         if(!file_exists($compiledTemplatePath)) {
 
             $parser = new Parser([
                 'content' => file_get_contents($this->_templatePath),
-                'params' => $this->_templateParams,
                 'tokens' => [
                     'escapeToken' => $this->escapeToken,
                     'notEscapeToken' => $this->notEscapeToken,

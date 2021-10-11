@@ -17,12 +17,7 @@ class Parser extends Component
     /** @var string */
     public $content;
     /** @var array  */
-    public $params = [];
-    /** @var array  */
     public $tokens = [];
-
-    /** @var string  */
-    protected $_tplParamsVarName = '$__tplParams';
 
     /**
      * @return string
@@ -33,13 +28,7 @@ class Parser extends Component
             call_user_func([$this, $method], $params);
         }
 
-        $params = $v = var_export($this->params, true);
-
-        return "<?php
-{$this->_tplParamsVarName} = {$params};
-
-{$this->content}
-        ";
+        return $this->content;
 
     }
 
@@ -55,12 +44,7 @@ class Parser extends Component
         $this->content = preg_replace_callback(
             $pattern,
             function ($matches) use ($escape) {
-                foreach($this->params as $name => $value) {
-                    if($name == $matches[0]) {
-                        return $escape === true ?  "<?= htmlspecialchars({$this->_tplParamsVarName}['{$name}']); ?>" : "<?= {$this->_tplParamsVarName}['{$name}']; ?>";
-                    }
-                }
-                return $matches[0];
+                return $escape === true ?  "<?= htmlspecialchars(\${$matches[1]}); ?>" : "<?= \${$matches[1]}; ?>";
             },
             $this->content
         );
