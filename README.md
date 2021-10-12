@@ -33,3 +33,4 @@ php composer.phar install
 5. На главной демонстрация того что описано в задании в "Термины"
 6. Сделан консольный контроллер https://github.com/vko-dp/averia-electronics-test/blob/master/commands/RevertTplController.php в котором все параметры собраны описанные в задании в "Задача"
 7. php yii revert-tpl/index - запускаем контроллер этой командой и видим результат работы для каждой пары параметров (шаблон, результат) - массив параметров либо соответствующее исключение
+8. унит тест DummyTest - php vendor/bin/codecept run unit
