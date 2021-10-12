@@ -16,8 +16,13 @@ class Parser extends Component
 {
     /** @var string */
     public $content;
+    /** @var string */
+    public $result;
     /** @var array  */
     public $tokens = [];
+
+    /** @var string  */
+    protected $_separator = '~~~@@@~~~';
 
     /**
      * @return string
@@ -28,6 +33,18 @@ class Parser extends Component
             call_user_func([$this, $method], $params);
         }
         return $this->content;
+    }
+
+    /**
+     * @return array|false
+     */
+    public function revertTemplateResult() {
+
+        $response = [];
+        foreach($this->tokens as $method => $params) {
+            $response = array_merge($response, call_user_func([$this, "{$method}Revert"], $params));
+        }
+        return $response;
     }
 
     /**
@@ -55,6 +72,54 @@ class Parser extends Component
     protected function notEscapeToken(array $params) {
 
         $this->escapeToken($params, false);
+    }
+
+    /**
+     * @param array $params
+     * @param bool $escape
+     * @return array|false
+     * @throws InvalidConfigException
+     * @throws ResultTemplateMismatchException
+     */
+    protected function escapeTokenRevert(array $params, $escape = true) {
+
+        $pattern = $this->_getPattern($params);
+        $names = [];
+        $values = [];
+
+        if(preg_match_all($pattern, $this->content, $matches)) {
+            foreach($matches[1] as $key => $name) {
+                $names[] = $name;
+                $this->content = str_replace($matches[0][$key], $this->_separator, $this->content);
+            }
+
+            $textParts = explode($this->_separator, $this->content);
+            foreach($textParts as $part) {
+                if(strpos($this->result, $part) === false) {
+                    throw new ResultTemplateMismatchException('Result not matches original template.');
+                }
+            }
+            $this->result = trim(str_replace($textParts, $this->_separator, $this->result), $this->_separator);
+            $values = explode($this->_separator, $this->result);
+            if($escape === true) {
+                foreach($values as $k => $v) {
+                    $values[$k] = htmlspecialchars_decode($v);
+                }
+            }
+        }
+
+        return array_combine($names, $values);
+    }
+
+    /**
+     * @param array $params
+     * @return array|false
+     * @throws InvalidConfigException
+     * @throws ResultTemplateMismatchException
+     */
+    protected function notEscapeTokenRevert(array $params) {
+
+        return $this->escapeTokenRevert($params, false);
     }
 
     /**

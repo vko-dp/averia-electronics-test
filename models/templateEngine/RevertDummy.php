@@ -65,7 +65,6 @@ class RevertDummy extends Model
     /**
      * @return array|false
      * @throws InvalidTemplateException
-     * @throws ResultTemplateMismatchException
      */
     public function getTemplateParams() {
 
@@ -73,32 +72,12 @@ class RevertDummy extends Model
             throw new InvalidTemplateException(implode(', ', $this->firstErrors));
         }
 
-        $separator = '~~~@@@~~~';
-        $names = [];
-        $values = [];
+        $parser = new Parser([
+            'content' => $this->template,
+            'result' => $this->result,
+            'tokens' => $this->tokens,
+        ]);
 
-        foreach($this->tokens as $item) {
-
-            $openToken = preg_quote($item[0]);
-            $closeToken = preg_quote($item[1]);
-            $pattern = "|{$openToken}([^{$closeToken}]+){$closeToken}|isU";
-            if(preg_match_all($pattern, $this->template, $matches)) {
-                foreach($matches[1] as $key => $name) {
-                    $names[] = $name;
-                    $this->template = str_replace($matches[0][$key], $separator, $this->template);
-                }
-
-                $textParts = explode($separator, $this->template);
-                foreach($textParts as $part) {
-                    if(strpos($this->result, $part) === false) {
-                        throw new ResultTemplateMismatchException('Result not matches original template.');
-                    }
-                }
-                $this->result = trim(str_replace($textParts, $separator, $this->result), $separator);
-                $values = explode($separator, $this->result);
-            }
-        }
-
-        return array_combine($names, $values);
+        return $parser->revertTemplateResult();
     }
 }
