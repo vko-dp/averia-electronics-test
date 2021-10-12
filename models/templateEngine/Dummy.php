@@ -67,6 +67,7 @@ class Dummy extends Model
      * @param $result
      * @return array|false
      * @throws InvalidTemplateException
+     * @throws ResultTemplateMismatchException
      */
     public function revertTemplateResult($template, $result) {
 

@@ -15,6 +15,9 @@ use yii\console\ExitCode;
  */
 class RevertTplController extends Controller
 {
+    /**
+     * @return int
+     */
     public function actionIndex() {
 
         $dummy = new Dummy();
