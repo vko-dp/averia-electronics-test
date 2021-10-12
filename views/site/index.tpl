@@ -28,10 +28,10 @@
             </div>
             <div class="col-lg-4">
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <p>
+                    php yii revert-tpl/index - запускаем контроллер этой командой и видим результат работы для каждой пары параметров (шаблон, результат) - массив параметров либо соответствующее исключение
+                </p>
+                <p>унит тест DummyTest - php vendor/bin/codecept run unit</p>
 
             </div>
         </div>
